@@ -1,0 +1,99 @@
+<html>
+<head> 
+<title>IPL Database</title>
+<style>
+table,th,td{
+	border :1px dashed black;
+	color:red;
+	background-color:cyan;
+}
+body{ background-color:cyan;font-size:25;
+         
+}
+h1{
+color:red;text-decoration:underline;
+margin-left:200px;
+margin-right:200px;
+}
+
+#m1{
+font-size:20px;
+color:green;}
+
+
+#b1{
+size:50px;}
+
+#slider{
+border:2px outset yellow;
+width:600px;
+position:relative;
+float:right;
+margin-top:50px;
+transition:width 2s,transform 2s;
+}
+
+
+
+#slider:hover{
+width:630px;
+transform:rotate(5deg);
+}
+
+
+#bigwrapper{
+	width:1340px;
+	margin-top:10px;
+}
+
+
+#left{
+float:left;
+width:550px;
+padding-left:35px;
+position:relative;
+text-shadow:2px 2px pink;}
+footer{
+margin-bottom:0px;
+position:absolute;
+top:650px;
+left:10px;
+border-top:2px solid black;
+width:1340px;
+text-align:center;
+font-size:20px;
+color:blue;
+padding-top:13px;
+}
+
+.asx{
+background-image:url("s5.jpg");
+
+
+
+background-size:cover;
+}
+</style>
+</head>
+<body>
+<H1>WELOME TO OUR IPL STATISTICS</H1>
+<hr>
+<marquee direction="right" id="m1">INDIAN PREMIER LEAGUE-2017 statitics</marquee>
+<hr>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<body bgcolor="red" CLASS="asx">
+<div id="div1">
+<h1 align="center" id="ss1"> DATABASE ADMINISTRATOR</H1>
+<div id="r1">
+
+</div>
+<form action="verify.php" method="post">
+<div id="form">
+<span color="green" text-decoration="underline">LOGIN</span></br></br>
+USERNAME:</BR><input type="text" name="username"></br></br>
+PASSWORD:</BR><INPUT TYPE="PASSWORD" NAME="password"></br></br>
+<input type="submit" id="submit">
+</div>
+</form>
+<a href="ipl.html">go to home</a>
+</body>

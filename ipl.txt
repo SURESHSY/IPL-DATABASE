@@ -1,0 +1,36 @@
+create table assistant
+(
+course_id varchar(8), 
+sec_id varchar(8),
+semester varchar(6),
+year numeric(4,0),
+s_id varchar(5),
+foreign key(course_id,sec_id,semester,year) references to section,
+foreign key(s_id) references student
+
+);
+
+
+4.insert into assistant values ('CS-101', '1','Spring','2009','54321');
+5.select s_id from advisor group by s_id having count(*)>3;
+
+
+
+6.select s_id from advisor where i_id in(select id from instructor where name='Shrinivasan') group by s_id
+INTERSECT
+select s_id from advisor where i_id in (select id from instructor where name='Ashok');
+
+
+7.select s.name from student s,advisor a,instructor i where s.id=a.s_id and a.i_id=i_id and i.dept_name!=s.dept_name;
+8i.delete from takes
+where (select extract(year from current_date)-year>=10);
+or
+8i.delete from teaches
+where (select extract(year from current_date)-year>=10);
+
+
+
+
+//alter table prereq drop constraint prereq_prereq_id_FK;
+alter table prereq add constraint prereq_prereq_id_FK
+ foreign key(prereq_id) references course on delete cascade;

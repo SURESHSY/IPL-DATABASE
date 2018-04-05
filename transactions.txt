@@ -1,0 +1,630 @@
+Server [localhost]:
+Database [postgres]:
+Port [5432]:
+Username [postgres]:
+Password for user postgres:
+psql (9.6.1)
+WARNING: Console code page (437) differs from Windows code page (1252)
+         8-bit characters might not work correctly. See psql reference
+         page "Notes for Windows users" for details.
+Type "help" for help.
+
+postgres=# create table demo1(id int,name varchar(20));
+CREATE TABLE
+postgres=# insert into values(1,'abc'),(2,'pqr'),(3,'mno');
+ERROR:  syntax error at or near "1"
+LINE 1: insert into values(1,'abc'),(2,'pqr'),(3,'mno');
+                           ^
+postgres=# insert into demo1 values(1,'abc'),(2,'pqr'),(3,'mno');
+INSERT 0 3
+postgres=# select * from demo1;
+ id | name
+----+------
+  1 | abc
+  2 | pqr
+  3 | mno
+(3 rows)
+
+
+postgres=# \echo autocommit;
+autocommit;
+postgres=# \echo :autocommit;
+:autocommit;
+postgres=# \echo :autocommit
+:autocommit
+postgres=# \echo :autocommit
+:autocommit
+postgres=# ;
+postgres=# \echo autocommit;
+autocommit;
+postgres=# \echo autocommit;
+autocommit;
+postgres=# \echo :autocommit
+:autocommit
+postgres=# \echo :autocommit;
+:autocommit;
+postgres=#
+postgres=# begin
+postgres-# ;
+BEGIN
+postgres=# \set autocmmit=on;
+\set: error while setting variable
+postgres=# \set autocommit=on;
+\set: error while setting variable
+postgres=# \set autocommit=on
+\set: error while setting variable
+postgres=# \set autocommit=off
+\set: error while setting variable
+postgres=# \set autocommit=off;
+\set: error while setting variable
+postgres=# end
+postgres-# ;
+COMMIT
+postgres=# \set autocommit=on;
+\set: error while setting variable
+postgres=# \set autocommit=on
+\set: error while setting variable
+postgres=# \echo :autocommit;
+:autocommit;
+postgres=# \echo :autocommit
+:autocommit
+postgres=#
+postgres=# \echo autocommit
+autocommit
+postgres=# \echo :autocommit;
+:autocommit;
+postgres=#
+postgres=# \echo autocommit on;
+autocommit on;
+postgres=# \echo :autocommit
+:autocommit
+postgres=# +
+postgres-# 123
+postgres-# 456789
+postgres-# ;
+ERROR:  syntax error at or near "+"
+LINE 1: +
+        ^
+postgres=# commit
+postgres-# ;
+WARNING:  there is no transaction in progress
+COMMIT
+postgres=# \set autocommit off;
+postgres=# \echo :autocommit;
+off;;
+postgres=# begin;
+BEGIN
+postgres=# select 1/100;
+ ?column?
+----------
+        0
+(1 row)
+
+
+postgres=# select 1/0;
+ERROR:  division by zero
+postgres=# commit;
+ROLLBACK
+postgres=# end;
+WARNING:  there is no transaction in progress
+COMMIT
+postgres=# commit;
+WARNING:  there is no transaction in progress
+COMMIT
+postgres=# \echo :autocommit;
+off;;
+postgres=# begin
+postgres-# ;
+BEGIN
+postgres=# insert into demo1(name) values ('sri');
+INSERT 0 1
+postgres=# insert into demo1(name) values ('surya');
+INSERT 0 1
+postgres=# savepoint;
+ERROR:  syntax error at or near ";"
+LINE 1: savepoint;
+                 ^
+postgres=# savepoint sp1;
+ERROR:  current transaction is aborted, commands ignored until end of transaction block
+postgres=# savepoint sp 1;
+ERROR:  syntax error at or near "1"
+LINE 1: savepoint sp 1;
+                     ^
+postgres=# select * from demo1;
+ERROR:  current transaction is aborted, commands ignored until end of transaction block
+postgres=# commit;
+ROLLBACK
+postgres=# commit;
+WARNING:  there is no transaction in progress
+COMMIT
+postgres=# select * from demo1;
+ id | name
+----+------
+  1 | abc
+  2 | pqr
+  3 | mno
+(3 rows)
+
+
+postgres=# savepoint sp1;
+ERROR:  SAVEPOINT can only be used in transaction blocks
+postgres=# begin;
+BEGIN
+postgres=# savepoint sp1;
+SAVEPOINT
+postgres=# insert into demo1(name) values ('surya');
+INSERT 0 1
+postgres=# insert into demo1(name) values ('sri');
+INSERT 0 1
+postgres=# savepoint sp2;
+SAVEPOINT
+postgres=# select * from demo1;
+ id | name
+----+-------
+  1 | abc
+  2 | pqr
+  3 | mno
+    | surya
+    | sri
+(5 rows)
+
+
+postgres=# rollback sp1;
+ERROR:  syntax error at or near "sp1"
+LINE 1: rollback sp1;
+                 ^
+postgres=# rollback sp2;
+ERROR:  syntax error at or near "sp2"
+LINE 1: rollback sp2;
+                 ^
+postgres=# rollback ;
+ROLLBACK
+postgres=# select * from demo1;
+ id | name
+----+------
+  1 | abc
+  2 | pqr
+  3 | mno
+(3 rows)
+
+
+postgres=# commit;
+WARNING:  there is no transaction in progress
+COMMIT
+postgres=# select * from demo1;
+ id | name
+----+------
+  1 | abc
+  2 | pqr
+  3 | mno
+(3 rows)
+
+
+postgres=# insert into demo1(name) values ('sri');
+INSERT 0 1
+postgres=# insert into demo1(name) values ('surya');
+INSERT 0 1
+postgres=# select * from demo1;
+ id | name
+----+-------
+  1 | abc
+  2 | pqr
+  3 | mno
+    | sri
+    | surya
+(5 rows)
+
+
+postgres=# rollback to sp1;
+ERROR:  ROLLBACK TO SAVEPOINT can only be used in transaction blocks
+postgres=# begin;
+BEGIN
+postgres=# select * from demo1;
+ id | name
+----+-------
+  1 | abc
+  2 | pqr
+  3 | mno
+    | sri
+    | surya
+(5 rows)
+
+
+postgres=# savepoint sp1;
+SAVEPOINT
+postgres=# insert into demo1(name) values ('kohli');
+INSERT 0 1
+postgres=# savepoint sp2;
+SAVEPOINT
+postgres=# rollback to sp1;
+ROLLBACK
+postgres=# select * from demo1;
+ id | name
+----+-------
+  1 | abc
+  2 | pqr
+  3 | mno
+    | sri
+    | surya
+(5 rows)
+
+
+postgres=# select * from demo1;
+ id | name
+----+-------
+  1 | abc
+  2 | pqr
+  3 | mno
+    | sri
+    | surya
+(5 rows)
+
+
+postgres=# insert into demo1(name) values ('kohli');
+INSERT 0 1
+postgres=# savepoint sp1;
+SAVEPOINT
+postgres=# insert into demo1(name) values ('dravid');
+INSERT 0 1
+postgres=# savepoint sp2;
+SAVEPOINT
+postgres=# select * from demo1;
+ id |  name
+----+--------
+  1 | abc
+  2 | pqr
+  3 | mno
+    | sri
+    | surya
+    | kohli
+    | dravid
+(7 rows)
+
+
+postgres=# rollback to sp1;
+ROLLBACK
+postgres=# select * from demo1;
+ id | name
+----+-------
+  1 | abc
+  2 | pqr
+  3 | mno
+    | sri
+    | surya
+    | kohli
+(6 rows)
+
+
+postgres=# rollback;
+ROLLBACK
+postgres=# select * from demo1;
+ id | name
+----+-------
+  1 | abc
+  2 | pqr
+  3 | mno
+    | sri
+    | surya
+(5 rows)
+
+
+postgres=# rollback ;
+WARNING:  there is no transaction in progress
+ROLLBACK
+postgres=# begin;
+BEGIN
+postgres=# select * from demo1;
+ id | name
+----+-------
+  1 | abc
+  2 | pqr
+  3 | mno
+    | sri
+    | surya
+(5 rows)
+
+
+postgres=# insert into demo1(name) values ('dravid');
+INSERT 0 1
+postgres=# savepoint sp1;
+SAVEPOINT
+postgres=# insert into demo1(name) values ('kohli');
+INSERT 0 1
+postgres=# savepoint sp2;
+SAVEPOINT
+postgres=# commit;
+COMMIT
+postgres=# select * from demo1;
+ id |  name
+----+--------
+  1 | abc
+  2 | pqr
+  3 | mno
+    | sri
+    | surya
+    | dravid
+    | kohli
+(7 rows)
+
+
+postgres=# rollback to sp1;
+ERROR:  ROLLBACK TO SAVEPOINT can only be used in transaction blocks
+postgres=# begin;
+BEGIN
+postgres=# select * from demo1;
+ id |  name
+----+--------
+  1 | abc
+  2 | pqr
+  3 | mno
+    | sri
+    | surya
+    | dravid
+    | kohli
+(7 rows)
+
+
+postgres=# insert into demo1(name) values ('rohit');
+INSERT 0 1
+postgres=# savepoint sp1;
+SAVEPOINT
+postgres=# insert into demo1(name) values ('rahul');
+INSERT 0 1
+postgres=# savepoint sp2;
+SAVEPOINT
+postgres=# rollback to sp1;
+ROLLBACK
+postgres=# commit;
+COMMIT
+postgres=# select * from demo1;
+ id |  name
+----+--------
+  1 | abc
+  2 | pqr
+  3 | mno
+    | sri
+    | surya
+    | dravid
+    | kohli
+    | rohit
+(8 rows)
+
+
+postgres=# rollback to sp1;
+ERROR:  ROLLBACK TO SAVEPOINT can only be used in transaction blocks
+postgres=# begin;
+BEGIN
+postgres=# select * from demo1;
+ id |  name
+----+--------
+  1 | abc
+  2 | pqr
+  3 | mno
+    | sri
+    | surya
+    | dravid
+    | kohli
+    | rohit
+(8 rows)
+
+
+postgres=# rollback to sp1;
+ERROR:  no such savepoint
+postgres=# insert into demo1(name) values ('marsh');
+ERROR:  current transaction is aborted, commands ignored until end of transaction block
+postgres=# begin;
+ERROR:  current transaction is aborted, commands ignored until end of transaction block
+postgres=# end;
+ROLLBACK
+postgres=# begin;
+BEGIN
+postgres=# select * from demo1;
+ id |  name
+----+--------
+  1 | abc
+  2 | pqr
+  3 | mno
+    | sri
+    | surya
+    | dravid
+    | kohli
+    | rohit
+(8 rows)
+
+
+postgres=# insert into demo1(name) values ('marsh');
+INSERT 0 1
+postgres=# savepoint sp1;
+SAVEPOINT
+postgres=# insert into demo1(name) values ('mukhi');
+INSERT 0 1
+postgres=# savepoint sp2;
+SAVEPOINT
+postgres=# insert into demo1(name) values ('maddy');
+INSERT 0 1
+postgres=# savepoint sp3;
+SAVEPOINT
+postgres=# select * from demo1;
+ id |  name
+----+--------
+  1 | abc
+  2 | pqr
+  3 | mno
+    | sri
+    | surya
+    | dravid
+    | kohli
+    | rohit
+    | marsh
+    | mukhi
+    | maddy
+(11 rows)
+
+
+postgres=# rollback to sp2;
+ROLLBACK
+postgres=# rollback to sp3;
+ERROR:  no such savepoint
+postgres=# select * from demo1;
+ERROR:  current transaction is aborted, commands ignored until end of transaction block
+postgres=# commit;
+ROLLBACK
+postgres=# select * from demo1;
+ id |  name
+----+--------
+  1 | abc
+  2 | pqr
+  3 | mno
+    | sri
+    | surya
+    | dravid
+    | kohli
+    | rohit
+(8 rows)
+
+
+postgres=# select * from demo1;
+ id |  name
+----+--------
+  1 | abc
+  2 | pqr
+  3 | mno
+    | sri
+    | surya
+    | dravid
+    | kohli
+    | rohit
+(8 rows)
+
+
+postgres=# insert into demo1(name) values ('maddy');
+INSERT 0 1
+postgres=# select * from demo1;
+ id |  name
+----+--------
+  1 | abc
+  2 | pqr
+  3 | mno
+    | sri
+    | surya
+    | dravid
+    | kohli
+    | rohit
+    | maddy
+(9 rows)
+
+
+postgres=# savepoint sp1;
+ERROR:  SAVEPOINT can only be used in transaction blocks
+postgres=# begin;
+BEGIN
+postgres=# select * from demo1;
+ id |  name
+----+--------
+  1 | abc
+  2 | pqr
+  3 | mno
+    | sri
+    | surya
+    | dravid
+    | kohli
+    | rohit
+    | maddy
+(9 rows)
+
+
+postgres=# savepoint sp1;
+SAVEPOINT
+postgres=# insert into demo1(name) values ('marsh');
+INSERT 0 1
+postgres=# savepoint sp2;
+SAVEPOINT
+postgres=# insert into demo1(name) values ('smith');
+INSERT 0 1
+postgres=# savepoint sp3;
+SAVEPOINT
+postgres=# rollback to sp2;
+ROLLBACK
+postgres=# insert into demo1(name) values ('gillespie');
+INSERT 0 1
+postgres=# savepoint sp3;
+SAVEPOINT
+postgres=# rollback to sp3;
+ROLLBACK
+postgres=# rollback to sp4;
+ERROR:  no such savepoint
+postgres=# commit;
+ROLLBACK
+postgres=# select * from demo1;
+ id |  name
+----+--------
+  1 | abc
+  2 | pqr
+  3 | mno
+    | sri
+    | surya
+    | dravid
+    | kohli
+    | rohit
+    | maddy
+(9 rows)
+
+
+postgres=# begin;
+BEGIN
+postgres=# insert into demo1(name) values ('mukhi');
+INSERT 0 1
+postgres=# savepoint sp1;
+SAVEPOINT
+postgres=# insert into demo1(name) values ('marsh');
+INSERT 0 1
+postgres=# savepoint sp2;
+SAVEPOINT
+postgres=# insert into demo1(name) values ('rahul');
+INSERT 0 1
+postgres=# savepoint sp3;
+SAVEPOINT
+postgres=# rollback to sp2;
+ROLLBACK
+postgres=# select * from demo1;
+ id |  name
+----+--------
+  1 | abc
+  2 | pqr
+  3 | mno
+    | sri
+    | surya
+    | dravid
+    | kohli
+    | rohit
+    | maddy
+    | mukhi
+    | marsh
+(11 rows)
+
+
+postgres=# rollback to sp3;
+ERROR:  no such savepoint
+postgres=# commit;
+ROLLBACK
+postgres=# select * from demo1;
+ id |  name
+----+--------
+  1 | abc
+  2 | pqr
+  3 | mno
+    | sri
+    | surya
+    | dravid
+    | kohli
+    | rohit
+    | maddy
+(9 rows)
+
+
+postgres=# end;
+WARNING:  there is no transaction in progress
+COMMIT
+postgres=# \echo :autocommit
+off;
+postgres=#

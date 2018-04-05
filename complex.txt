@@ -1,0 +1,65 @@
+
+***select matches played and total runs scored by a player who has won player of 
+tournament mor than once***
+select pname,matches_played ,runs from players where pname in
+(select POT from i_seasons group by POT having (count(POT) >1 ) )
+
+
+
+//total runs scored by man of the match of match nm=2
+1.SELECT pname,runs from players WHERE pname=(select MOM from matches WHERE mnumber=2)
+
+
+** it gives the tname which has 5 top scorers ***
+2.SELECT tname as team  from players group by tname
+ order by runs desc limit 5
+ 
+ 
+3.create view sri as(SELECT tname as team from players 
+group by tname order by runs desc limit 5 )
+
+**select mentor***
+4. SELECT mentor from teams where tname=(SELECT tname from sri group by tname having max(count))
+
+
+
+**to update points **
+update points set points=points+2 where tname=(select winner from matches where mnumber=1);
+
+
+**to update matches played by a team**
+update points set matches_played=matches_played+1 where tname in
+(select team1 from matches where mnumber=2);
+
+
+***update points****
+DECLARE @a INT
+set @a=10
+WHILE @a<=20
+BEGIN
+update points set matches_played=matches_played+1 where tname in(select team1 from matches where mnumber=@a)
+set @a=@a+1
+end
+
+
+***select total no. of people with average greater than 10**
+(select count(pname) from players where (runs/matches_played)>10)
+
+***select team names which has players with average greater than 10*****
+select distinct tname from players where pname in (select pname from players where (runs/matches_played)>10)
+
+**choose the player with max no.of Player of tournaments***
+select POT from i_seasons group by POT having count(POT) >1 
+
+
+
+
+\\\\\\\\\\
+select tname,points from points order by points desc
+\\\\\\\\\
+select pname,runs,tname from players where runs in
+(select pname  from players where runs>=(select ) )group by tname
+\\\\\\
+select  pname,  wickets ,tname from players where  wickets in
+(select max(wickets) from players group by tname ) group by tname
+
